@@ -4,7 +4,9 @@ Test Network.sol for creating an Oracle and delivering the blockHash + receiptsR
 This repo has some simple tests to demonstrate how an Oracle can deliver the updateBlockHeader() call to fulfil the LayerZero oracle job.
 
 We use hardhat-deploy to push and maintain the contract information, and also provide a task to whitelist the singer (see below)
-### to install and test
+### to install and test 
+
+Recently tested with `node v16.13.2`
 
 ```
 npm install
