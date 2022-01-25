@@ -9,6 +9,7 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 import "./interfaces/ILayerZeroOracle.sol";
 
+// Oracle template
 contract Oracle is ILayerZeroOracle, Ownable, ReentrancyGuard {
     using SafeERC20 for IERC20;
 
@@ -19,7 +20,6 @@ contract Oracle is ILayerZeroOracle, Ownable, ReentrancyGuard {
     event Withdraw(address to, uint amount);
 
     constructor() {
-
     }
 
     // owner can approve a token spender
