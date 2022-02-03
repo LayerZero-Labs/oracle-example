@@ -3,9 +3,10 @@
 pragma solidity ^0.8.11;
 
 import "./interfaces/ILayerZeroOracle.sol";
+import "./interfaces/ILayerZeroNetworkV1.sol";
 
 // this is a mocked LayerZero Netowrk that receives the blockHash and receiptsRoot
-contract Network {
+contract Network is ILayerZeroNetworkV1 {
 
     struct BlockData {
         uint          confirmations;
