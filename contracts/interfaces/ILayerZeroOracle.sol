@@ -9,10 +9,11 @@ interface ILayerZeroOracle {
     function getPrice(uint16 dstChainId) view external returns (uint priceInWei);
 
     // initiates the offchain oracle to do its job
-    function notifyOracleOfBlock(uint16 dstChainId, bytes calldata dstNetworkAddress, uint blockConfirmations) external;
+    function notifyOracleOfBlock( uint16 chainId,  bytes calldata endpointAddress, uint blockConfirmations, bytes32 payloadHash) external;
 
     // return true if the address is allowed to call updateBlockHeader()
     function isApproved(address oracleSigner) view external returns (bool approved);
 
 }
+
 

@@ -42,7 +42,7 @@ contract Oracle is ILayerZeroOracle, Ownable, ReentrancyGuard {
     }
 
     // LayerZero will call this function to initiate the Chainlink oracle
-    function notifyOracleOfBlock(uint16 _chainId, bytes memory _contractAddress, uint blockConfirmations) override external {
+    function notifyOracleOfBlock(uint16 _chainId, bytes memory _contractAddress, uint blockConfirmations, bytes32 payloadHash) override external {
        // TODO initiate Oracle on source, indicating the blockheader/receipts root should be moved to destination
     }
 
