@@ -8,10 +8,13 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 import "./interfaces/ILayerZeroOracle.sol";
+import "./interfaces/ILayerZeroUltraLightNodeV1.sol";
 
 // Oracle template
 contract Oracle is ILayerZeroOracle, Ownable, ReentrancyGuard {
     using SafeERC20 for IERC20;
+
+    address immutable ultraLightNode;
 
     mapping(address => bool) public approvedAddresses;
     mapping(uint16 => uint) public chainPriceLookup;
@@ -19,7 +22,20 @@ contract Oracle is ILayerZeroOracle, Ownable, ReentrancyGuard {
     event WithdrawTokens(address token, address to, uint amount);
     event Withdraw(address to, uint amount);
 
-    constructor() {
+    constructor(address _ultraLightNode) {
+        ultraLightNode = _ultraLightNode;
+    }
+
+    // updateBlockHeader of the ultraLightNode
+    function publishBlockHeader(uint16 _srcChainId, bytes calldata _blockHash, uint _confirmations, bytes calldata _data ) external {
+        require(isApproved(msg.sender), "Oracle: signer is not approved");
+
+        ILayerZeroUltraLightNodeV1(ultraLightNode).updateBlockHeader(
+            _srcChainId,
+            _blockHash,
+            _confirmations,
+            _data
+        );
     }
 
     // owner can approve a token spender
@@ -55,12 +71,12 @@ contract Oracle is ILayerZeroOracle, Ownable, ReentrancyGuard {
     }
 
     // return whether this signing address is whitelisted
-    function isApproved(address oracleAddress) override view external returns (bool approved){
+    function isApproved(address oracleAddress) public view override returns (bool approved){
         return approvedAddresses[oracleAddress];
     }
 
-    // approve a signing address
-    function setApprovedAddress(address _oracleAddress, bool _approve) onlyOwner external{
+    // owner can approve a signer
+    function setApprovedAddress(address _oracleAddress, bool _approve) external onlyOwner {
         approvedAddresses[_oracleAddress] = _approve;
     }
 
