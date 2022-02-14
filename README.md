@@ -1,7 +1,7 @@
-# network-for-oracles
-Test Network.sol for creating an Oracle and delivering the blockHash + receiptsRoot
+# LayerZero Oracle Example
+Test UltraLightNode.sol for creating an Oracle and delivering the blockHash + receiptsRoot
 
-This repo has some simple tests to demonstrate how an Oracle can deliver the updateBlockHeader() call to fulfil the LayerZero oracle job.
+This repo has some simple tests to demonstrate how an Oracle can deliver the updateHash() call to fulfil the LayerZero oracle job.
 
 We use hardhat-deploy to push and maintain the contract information, and also provide a task to whitelist the singer (see below)
 ### to install and test 
@@ -23,7 +23,8 @@ npx hardhat --network fuji set-approved-address --address 0xaaaaa_YOUR_SIGNER_AD
 
 ### Notes 
 
-The Oracle contract is the "Destination Whitelister" which approves a signer to deliver the updateBlockHeader() 
+The Oracle contract is the "Destination Whitelister" which approves the callling signer to deliver the updateHash() thru the Oracle contract itself.
+This unifies the msg.sender which is used to store the data in the LayerZero contracts.
 
 We also have a specification on gitbook here: 
 

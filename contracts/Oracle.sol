@@ -26,7 +26,9 @@ contract Oracle is ILayerZeroOracle, Ownable, ReentrancyGuard {
         ultraLightNode = _ultraLightNode;
     }
 
-    // updateBlockHeader of the ultraLightNode
+    // Oracle.updateHash() internally calls UltraLightNode.updateHash()
+    // This method wraps the ULN call in order that the same msg.sender
+    // is always the same deliverer of the oracle data for LayerZero in the ULN.
     function updateHash(uint16 _srcChainId, bytes calldata _blockHash, uint _confirmations, bytes calldata _data ) external {
         require(isApproved(msg.sender), "Oracle: signer is not approved");
 
@@ -80,18 +82,8 @@ contract Oracle is ILayerZeroOracle, Ownable, ReentrancyGuard {
         approvedAddresses[_oracleAddress] = _approve;
     }
 
-    /**
-     * @dev Fallback function that delegates calls to the address returned by `_implementation()`. Will run if no other
-     * function in the contract matches the call data.
-     */
-    fallback () external payable {
-    }
-
-    /**
-     * @dev Fallback function that delegates calls to the address returned by `_implementation()`. Will run if call data
-     * is empty.
-     */
-    receive () external payable  {
-    }
+    // allow this contract to receive ether
+    fallback () external payable {}
+    receive () external payable  {}
 
 }
