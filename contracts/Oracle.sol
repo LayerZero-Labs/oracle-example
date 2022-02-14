@@ -27,10 +27,10 @@ contract Oracle is ILayerZeroOracle, Ownable, ReentrancyGuard {
     }
 
     // updateBlockHeader of the ultraLightNode
-    function publishBlockHeader(uint16 _srcChainId, bytes calldata _blockHash, uint _confirmations, bytes calldata _data ) external {
+    function updateHash(uint16 _srcChainId, bytes calldata _blockHash, uint _confirmations, bytes calldata _data ) external {
         require(isApproved(msg.sender), "Oracle: signer is not approved");
 
-        ILayerZeroUltraLightNodeV1(ultraLightNode).updateBlockHeader(
+        ILayerZeroUltraLightNodeV1(ultraLightNode).updateHash(
             _srcChainId,
             _blockHash,
             _confirmations,

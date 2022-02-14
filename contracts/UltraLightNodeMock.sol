@@ -27,7 +27,7 @@ contract UltraLightNodeMock is ILayerZeroUltraLightNodeV1, ReentrancyGuard {
     // _confirmations - the number of confirmations the oracle waited before delivering the data
     // _data - for EVM, this is the receiptsRoot for the blockHash being delivered (for EVM: 32 bytes in length)
     // Can be called by any address to update a block header
-    function updateBlockHeader(uint16 _srcChainId, bytes calldata _blockHash, uint _confirmations, bytes calldata _data ) override external {
+    function updateHash(uint16 _srcChainId, bytes calldata _blockHash, uint _confirmations, bytes calldata _data ) override external {
         // this function may revert with a default message if the oracle address is not an ILayerZeroOracle
         BlockData storage bd = blockHeaderLookup[msg.sender][_srcChainId][_blockHash];
         require(bd.data.length == 0 || bd.confirmations < _confirmations, "LayerZero: oracle data can only update if it has more confirmations");

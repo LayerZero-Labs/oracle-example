@@ -15,19 +15,19 @@ describe("Network for Oracle testing", () => {
         this.ultraLightNode = await UltraLightNodeMock.deploy()
         this.oracle = await Oracle.deploy(this.ultraLightNode.address)
 
-        // approve some signers of the oracle contract which will call the ULN.updateBlockHeader()
+        // approve some signers of the oracle contract which will call the ULN.updateHash()
         await this.oracle.connect(this.owner).setApprovedAddress(this.signer1.address, true)
 
-        // updateBlockHeader() test params
+        // updateHash() test params
         this.srcChainId = 10 // the source LayerZero chainId
         this.confirmations = 35 // the number of confirmations the oracle waited before delivery
         this.blockHash = '0x62d56fac42e933efa302134dfcd8110e3516e0740775636c08db18d53d87380d' // for evm -> 32 bytes, the blockhash
         this.data = '0xa5aa633e2c229440da69b2719c5830deddb8d98ee097f23545de9ac4921e96a3'  // for evm -> 32 bytes, the receiptsRoot
     })
 
-    it("deliver the data to the UltraLightNode.updateBlockHeader(), which performs the Oracle job", async () => {
+    it("deliver the data to the UltraLightNode.updateHash(), which performs the Oracle job", async () => {
         // perform the Oracle job
-        await this.oracle.connect(this.signer1).publishBlockHeader(
+        await this.oracle.connect(this.signer1).updateHash(
             this.srcChainId,
             this.blockHash,
             this.confirmations,
@@ -38,7 +38,7 @@ describe("Network for Oracle testing", () => {
     it("deliver the data with the same number of confirmations reverts", async () => {
 
         // perform the Oracle job successfully
-        await this.oracle.connect(this.signer1).publishBlockHeader(
+        await this.oracle.connect(this.signer1).updateHash(
             this.srcChainId,
             this.blockHash,
             this.confirmations,
@@ -47,7 +47,7 @@ describe("Network for Oracle testing", () => {
 
         // perform the same Oracle job again
         await expect(
-            this.oracle.connect(this.signer1).publishBlockHeader(
+            this.oracle.connect(this.signer1).updateHash(
                 this.srcChainId,
                 this.blockHash,
                 this.confirmations,
