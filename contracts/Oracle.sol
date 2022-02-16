@@ -59,9 +59,10 @@ contract Oracle is ILayerZeroOracle, Ownable, ReentrancyGuard {
         emit WithdrawTokens(_token, _to, _amount);
     }
 
-    // LayerZero will call this function to initiate the Chainlink oracle
-    function notifyOracleOfBlock(uint16 _chainId, bytes memory _contractAddress, uint blockConfirmations, bytes32 payloadHash) override external {
-       // TODO initiate Oracle on source, indicating the blockheader/receipts root should be moved to destination
+    // initiate the Oracle to perform its job
+    function notifyOracle(uint16 _dstChainId, uint16 _outboundProofType, bytes32 _remoteUlnAddress, uint64 _outboundBlockConfirmations, bytes32 _payloadHash) external override {
+        // TODO initiate Oracle on source from the the LayerZero contract,
+        //       indicating the blockheader/receipts root should be moved to destination
     }
 
     function getPrice(uint16 destinationChainId) external view override returns(uint price){
