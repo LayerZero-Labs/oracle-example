@@ -7,6 +7,7 @@ describe("Network for Oracle testing", () => {
 
         this.owner = signers[0];
         this.signer1 = signers[1];
+        this.signerUnapproved = signers[2];
 
         // ...
         let Oracle = await ethers.getContractFactory('Oracle')
@@ -26,7 +27,10 @@ describe("Network for Oracle testing", () => {
     })
 
     it("deliver the data to the UltraLightNode.updateHash(), which performs the Oracle job", async () => {
-        // perform the Oracle job
+        // note: the Oracle will have been initiated from the source chain.
+
+        // perform the Oracle job by calling updateHash().
+        // this completes the Oracle job on the destination chain.
         await this.oracle.connect(this.signer1).updateHash(
             this.srcChainId,
             this.blockHash,
@@ -36,7 +40,6 @@ describe("Network for Oracle testing", () => {
     })
 
     it("deliver the data with the same number of confirmations reverts", async () => {
-
         // perform the Oracle job successfully
         await this.oracle.connect(this.signer1).updateHash(
             this.srcChainId,
@@ -45,7 +48,8 @@ describe("Network for Oracle testing", () => {
             this.data
         )
 
-        // perform the same Oracle job again
+        // perform the same Oracle job again with the identical data and confirmations reverts.
+        // the only way to re-deliver the same data is to wait more confirmations and re-submit.
         await expect(
             this.oracle.connect(this.signer1).updateHash(
                 this.srcChainId,
@@ -54,6 +58,19 @@ describe("Network for Oracle testing", () => {
                 this.data
             )
         ).to.be.revertedWith('LayerZero: oracle data can only update if it has more confirmations')
+    })
+
+    it("call updateHash() as un-approved signer", async () => {
+        // perform the same Oracle job again with the identical data and confirmations reverts.
+        // the only way to re-deliver the same data is to wait more confirmations and re-submit.
+        await expect(
+            this.oracle.connect(this.signerUnapproved).updateHash(
+                this.srcChainId,
+                this.blockHash,
+                this.confirmations,
+                this.data
+            )
+        ).to.be.revertedWith('Oracle: signer is not approved')
     })
 
 })
