@@ -29,7 +29,7 @@ contract Oracle is ILayerZeroOracle, Ownable, ReentrancyGuard {
     // Oracle.updateHash() internally calls UltraLightNode.updateHash()
     // This method wraps the ULN call in order that the same msg.sender
     // is always the same deliverer of the oracle data for LayerZero in the ULN.
-    function updateHash(uint16 _srcChainId, bytes calldata _blockHash, uint _confirmations, bytes calldata _data ) external {
+    function updateHash(uint16 _srcChainId, bytes32 _blockHash, uint _confirmations, bytes32 _data ) external {
         require(isApproved(msg.sender), "Oracle: signer is not approved");
 
         ILayerZeroUltraLightNodeV1(ultraLightNode).updateHash(
