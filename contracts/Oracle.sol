@@ -17,7 +17,7 @@ contract Oracle is ILayerZeroOracle, Ownable, ReentrancyGuard {
     address immutable ultraLightNode;
 
     mapping(address => bool) public approvedAddresses;
-    mapping(uint16 => uint) public chainPriceLookup;
+    mapping(uint16 => mapping(uint16 => uint)) public chainPriceLookup;
 
     event WithdrawTokens(address token, address to, uint amount);
     event Withdraw(address to, uint amount);
@@ -65,12 +65,12 @@ contract Oracle is ILayerZeroOracle, Ownable, ReentrancyGuard {
         //       indicating the blockheader/receipts root should be moved to destination
     }
 
-    function getPrice(uint16 destinationChainId) external view override returns(uint price){
-        return chainPriceLookup[destinationChainId];
+    function getPrice(uint16 destinationChainId, uint16 outboundProofType) external view override returns(uint price){
+        return chainPriceLookup[destinationChainId][outboundProofType];
     }
 
-    function setPrice(uint16 _destinationChainId, uint price) external onlyOwner {
-        chainPriceLookup[_destinationChainId] = price;
+    function setPrice(uint16 _destinationChainId, uint16 outboundProofType, uint price) external onlyOwner {
+        chainPriceLookup[_destinationChainId][outboundProofType] = price;
     }
 
     // return whether this signing address is whitelisted
