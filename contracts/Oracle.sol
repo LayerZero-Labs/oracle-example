@@ -60,7 +60,7 @@ contract Oracle is ILayerZeroOracle, Ownable, ReentrancyGuard {
     }
 
     // initiate the Oracle to perform its job
-    function notifyOracle(uint16 _dstChainId, uint16 _outboundProofType, bytes32 _remoteUlnAddress, uint64 _outboundBlockConfirmations, bytes32 _payloadHash) external override {
+    function notifyOracle(uint16 _dstChainId, uint16 _outboundProofType, uint64 _outboundBlockConfirmations) external override {
         // TODO initiate Oracle on source from the the LayerZero contract,
         //       indicating the blockheader/receipts root should be moved to destination
     }
