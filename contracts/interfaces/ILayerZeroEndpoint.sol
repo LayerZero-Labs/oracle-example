@@ -17,8 +17,8 @@ interface ILayerZeroEndpoint is ILayerZeroUserApplicationConfig {
 
     function getOutboundNonce(uint16 _chainID, address _srcAddress) external view returns (uint64);
 
-    // endpoint has a unique ID that never change. User application may need this to identity the blockchain they are on
-    function getEndpointId() view external returns(uint16);
+    // @notice get this Endpoint's immutable source identifier
+    function getChainId() external view returns (uint16);
 
     // LayerZero catch all error/exception from the receiver contract and store them for retry.
     function retryPayload(uint16 _srcChainId, bytes calldata _srcAddress, address _dstAddress, uint _gasLimit) external returns(bool);
