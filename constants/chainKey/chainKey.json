@@ -1,0 +1,9 @@
+{
+  "RINKEBY": "rinkeby",
+  "BSC_TESTNET": "bsc-testnet",
+  "FUJI": "fuji",
+  "MUMBAI": "mumbai",
+  "ARBITRUM_RINKEBY": "arbitrum-rinkeby",
+  "OPTIMISM_KOVAN": "optimism-kovan",
+  "FANTOM_TESTNET": "fantom-testnet"
+}

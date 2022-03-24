@@ -11,32 +11,32 @@ contract UltraLightNodeMock is ILayerZeroUltraLightNodeV1, ReentrancyGuard {
 
     // oracle fees will accumulate in the LayerZero contract
     mapping(address => uint) public oracleQuotedFees;
+    mapping(address => mapping(uint16 => mapping(bytes32 => BlockData))) public hashLookup;
+
 
     struct BlockData {
         uint          confirmations;
         bytes32        data;
     }
 
-    event HeaderReceived(uint16 srcChainId, address oracle, uint confirmations, bytes32 blockhash);
+    event HashReceived(uint16 srcChainId, address oracle, uint confirmations, bytes32 blockhash);
     event WithdrawNative(address _owner, address _to, uint _amount);
 
     mapping(address => mapping(uint16 => mapping(bytes32 => BlockData))) public blockHeaderLookup;
 
-    // _srcChainId - the source layerzero chainId the data is coming from
-    // _blockHash - the source blockHash (for EVM: 32 bytes in length)
-    // _confirmations - the number of confirmations the oracle waited before delivering the data
-    // _data - for EVM, this is the receiptsRoot for the blockHash being delivered (for EVM: 32 bytes in length)
     // Can be called by any address to update a block header
-    function updateHash(uint16 _srcChainId, bytes32 _blockHash, uint _confirmations, bytes32 _data ) override external {
+    // can only upload new block data or the same block data with more confirmations
+    function updateHash(uint16 _remoteChainId, bytes32 _lookupHash, uint _confirmations, bytes32 _data) external override {
         // this function may revert with a default message if the oracle address is not an ILayerZeroOracle
-        BlockData storage bd = blockHeaderLookup[msg.sender][_srcChainId][_blockHash];
-        require(bd.data.length == 0 || bd.confirmations < _confirmations, "LayerZero: oracle data can only update if it has more confirmations");
+        BlockData storage bd = hashLookup[msg.sender][_remoteChainId][_lookupHash];
+        // if it has a record, requires a larger confirmation.
+        require(bd.confirmations < _confirmations, "LayerZero: oracle data can only update if it has more confirmations");
 
         // set the new information into storage
         bd.confirmations = _confirmations;
         bd.data = _data;
 
-        emit HeaderReceived(_srcChainId, msg.sender, _confirmations, _blockHash );
+        emit HashReceived(_remoteChainId, msg.sender, _confirmations, _lookupHash);
     }
 
     function withdrawOracleFee(address _to, uint _amount) override nonReentrant external {

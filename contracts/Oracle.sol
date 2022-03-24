@@ -13,6 +13,7 @@ import "./interfaces/ILayerZeroUltraLightNodeV1.sol";
 // Oracle template
 contract Oracle is ILayerZeroOracle, Ownable, ReentrancyGuard {
     using SafeERC20 for IERC20;
+    ILayerZeroUltraLightNodeV1 public uln; // ultraLightNode instance
 
     address immutable ultraLightNode;
 
@@ -21,6 +22,7 @@ contract Oracle is ILayerZeroOracle, Ownable, ReentrancyGuard {
 
     event WithdrawTokens(address token, address to, uint amount);
     event Withdraw(address to, uint amount);
+    event OracleNotified(uint16 dstChainId, uint16 _outboundProofType, uint blockConfirmations);
 
     constructor(address _ultraLightNode) {
         ultraLightNode = _ultraLightNode;
@@ -29,11 +31,11 @@ contract Oracle is ILayerZeroOracle, Ownable, ReentrancyGuard {
     // Oracle.updateHash() internally calls UltraLightNode.updateHash()
     // This method wraps the ULN call in order that the same msg.sender
     // is always the same deliverer of the oracle data for LayerZero in the ULN.
-    function updateHash(uint16 _srcChainId, bytes32 _blockHash, uint _confirmations, bytes32 _data ) external {
+    function updateHash(uint16 _remoteChainId, bytes32 _blockHash, uint _confirmations, bytes32 _data ) external {
         require(isApproved(msg.sender), "Oracle: signer is not approved");
 
         ILayerZeroUltraLightNodeV1(ultraLightNode).updateHash(
-            _srcChainId,
+            _remoteChainId,
             _blockHash,
             _confirmations,
             _data
@@ -61,8 +63,7 @@ contract Oracle is ILayerZeroOracle, Ownable, ReentrancyGuard {
 
     // initiate the Oracle to perform its job
     function notifyOracle(uint16 _dstChainId, uint16 _outboundProofType, uint64 _outboundBlockConfirmations) external override {
-        // TODO initiate Oracle on source from the the LayerZero contract,
-        //       indicating the blockheader/receipts root should be moved to destination
+        emit OracleNotified(_dstChainId, _outboundProofType, _outboundBlockConfirmations);
     }
 
     function getPrice(uint16 destinationChainId, uint16 outboundProofType) external view override returns(uint price){
