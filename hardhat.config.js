@@ -43,6 +43,7 @@ module.exports = {
 
     networks: {
         rinkeby: {
+            //this is the public infura api key
             url: "https://rinkeby.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
             chainId: 4,
             accounts: accounts(),
