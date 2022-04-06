@@ -30,6 +30,7 @@ module.exports = async function (taskArgs, hre) {
     console.log({TESTNET_ORACLES})
 
     var blockHashesReceived = {}
+    var blockHashesReceivedNotFromUs = []
     var receivedNotFromUs = 0
 
     let tx
@@ -51,6 +52,7 @@ module.exports = async function (taskArgs, hre) {
         if(blockHashesReceived[hash]?.us) {
             blockHashesReceived[hash].recv = true
         } else {
+            blockHashesReceivedNotFromUs.push(hash)
             receivedNotFromUs += 1
         }
         console.log(`HashReceived: ${srcChainId}, ${sender}, ${confirmations}, ${hash} | adding to send events`)
@@ -72,7 +74,7 @@ module.exports = async function (taskArgs, hre) {
                 )).wait()
                 console.log(`... [${i}] notifyOracle(${srcChainId},${outboundProof},${confirmations}) | tx: ${tx.transactionHash}`)
                 console.log(`added blockHash: ${tx.blockHash}`)
-                blockHashesReceived[tx.blockHash] = { us: true, recv: false };
+                blockHashesReceived[tx.blockHash] = { us: true, recv: false, txHash: tx.transactionHash };
             } catch (e) {
                 tries += 1
                 if(e.error?.message.includes('ProviderError')) {
@@ -98,7 +100,14 @@ module.exports = async function (taskArgs, hre) {
             if(blockHashesReceived[h].recv){
                 countReceived += 1
             } else if(blockHashesReceived[h].us) {
-                missing.push(h)
+                let transaction = await ether.getTransaction(blockHashesReceived[h].txHash);
+                await sleep(350)
+                if(blockHashesReceivedNotFromUs.includes(transaction.blockHash)) {
+                    console.log(`Reorg occurred -> tx.hash ${blockHashesReceived[h].txHash} was sent with blockHash: ${h}, but now in blockHash: ${transaction.blockHash}`)
+                    countReceived += 1
+                } else {
+                    missing.push(h)
+                }
             }
         }
 
