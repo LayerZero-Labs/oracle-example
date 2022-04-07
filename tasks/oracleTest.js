@@ -100,7 +100,7 @@ module.exports = async function (taskArgs, hre) {
             if(blockHashesReceived[h].recv){
                 countReceived += 1
             } else if(blockHashesReceived[h].us) {
-                let transaction = await ether.getTransaction(blockHashesReceived[h].txHash);
+                let transaction = await ethers.getTransaction(blockHashesReceived[h].txHash);
                 await sleep(350)
                 if(blockHashesReceivedNotFromUs.includes(transaction.blockHash)) {
                     console.log(`Reorg occurred -> tx.hash ${blockHashesReceived[h].txHash} was sent with blockHash: ${h}, but now in blockHash: ${transaction.blockHash}`)
