@@ -100,7 +100,7 @@ module.exports = async function (taskArgs, hre) {
             if(blockHashesReceived[h].recv){
                 countReceived += 1
             } else if(blockHashesReceived[h].us) {
-                // Get default provider for network
+                // Use the provider passed in by hardhat config to fetch the transaction by block hash
                 const transaction = await  hre.ethers.provider.getTransaction(blockHashesReceived[h].txHash);
 
                 await sleep(350)
